@@ -1,0 +1,15 @@
+[package]
+name = "picterm"
+version = "0.0.1"
+authors = ["Keisuke Toyota <hm.pudding0715@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+seahorse = "1.1"
+crossterm = "0.18"
+tui = { version = "0.14", default-features = false, features = ['crossterm'] }
+ansi4tui = "0.2"
+image = "0.23"
+tokio = { version = "1", features = ["full"] }
+eyre = "0.6"
+terminal_size = "0.1"
