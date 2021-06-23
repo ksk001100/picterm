@@ -27,53 +27,57 @@ impl IoAsyncHandler {
     }
 
     async fn do_initialize(&mut self) -> Result<()> {
-        let mut app = self.app.lock().await;
-        tokio::time::sleep(Duration::from_secs(1)).await;
-        app.initialized().await?;
+        {
+            let mut app = self.app.lock().await;
+            tokio::time::sleep(Duration::from_secs(1)).await;
+            app.initialized().await?;
 
-        if let Some(index) = app.state().get_index() {
-            if let Some(path) = app.state().get_image_path(index) {
-                if let Ok(bytes) = tokio::fs::read(path).await {
-                    app.state_mut().set_image(&bytes);
+            if let Some(index) = app.state().get_index() {
+                if let Some(path) = app.state().get_image_path(index) {
+                    if let Ok(bytes) = tokio::fs::read(path).await {
+                        app.state_mut().set_image(&bytes);
+                    }
                 }
             }
         }
 
-        if let Some(img) = app.state().get_image() {
-            if let Some((w, h)) = app.state().get_term_size() {
-                let a = image_fit_size(img, w, h).await;
-                app.state_mut().set_fit_size(a.0, a.1);
-            }
+        {
+            let mut app = self.app.lock().await;
+            tokio::task::block_in_place(move || {
+                if let Some(img) = app.state().get_image() {
+                    if let Some((w, h)) = app.state().get_term_size() {
+                        let (w, h) = image_fit_size(img, w, h);
+                        app.state_mut().set_fit_size(w, h);
+                    }
+                }
+            });
         }
-
 
         Ok(())
     }
 
     async fn do_load(&mut self, path: PathBuf) -> Result<()> {
-        let mut app = self.app.lock().await;
+        {
+            let mut app = self.app.lock().await;
 
-        if let Ok(bytes) = tokio::fs::read(path).await {
-            app.state_mut().set_image(&bytes);
-        }
-
-        if let Some(img) = app.state().get_image() {
-            if let Some((w, h)) = app.state().get_term_size() {
-                let a = image_fit_size(img, w, h).await;
-                app.state_mut().set_fit_size(a.0, a.1);
+            if let Ok(bytes) = tokio::fs::read(path).await {
+                app.state_mut().set_image(&bytes);
             }
         }
 
+        {
+            let mut app = self.app.lock().await;
+            tokio::task::block_in_place(move || {
+                if let Some(img) = app.state().get_image() {
+                    if let Some((w, h)) = app.state().get_term_size() {
+                        let (w, h) = image_fit_size(img, w, h);
+                        app.state_mut().set_fit_size(w, h);
+                    }
+                }
+            });
+        }
+
+
         Ok(())
     }
-
-    // async fn do_process_image(&mut self, img: &DynamicImage) -> Result<()> {
-    //     let mut app = self.app.lock().await;
-    //     if let Some((w, h)) = app.state().get_term_size() {
-    //         let a = image_fit_size(img, w, h).await;
-    //         app.state_mut().set_fit_size(a.0, a.1);
-    //     }
-    //
-    //     Ok(())
-    // }
 }

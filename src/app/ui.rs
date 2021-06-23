@@ -6,7 +6,7 @@ use image::Rgba;
 use tui::backend::Backend;
 use tui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use tui::style::{Color, Style};
-use tui::text::{Span, Spans};
+use tui::text::{Span, Spans, Text};
 use tui::widgets::{
     Block, BorderType, Borders, Cell, List, ListItem, ListState, Paragraph, Row, Table,
 };
@@ -47,8 +47,13 @@ where
     let image_list = draw_image_list(app.state());
     rect.render_stateful_widget(image_list, body_chunks[0], &mut state);
 
-    let image = draw_image(app.state());
-    rect.render_widget(image, body_chunks[1]);
+    if app.is_loading() {
+       let loading = draw_loading();
+        rect.render_widget(loading, body_chunks[1]);
+    } else {
+        let image = draw_image(app.state());
+        rect.render_widget(image, body_chunks[1]);
+    }
 }
 
 fn draw_title<'a>() -> Paragraph<'a> {
@@ -139,6 +144,17 @@ fn draw_image<'a>(state: &AppState) -> Paragraph<'a> {
     }
 
     Paragraph::new(result)
+        .block(
+            Block::default()
+                .borders(Borders::ALL)
+                .style(Style::default().fg(Color::White))
+                .border_type(BorderType::Plain),
+        )
+        .alignment(Alignment::Center)
+}
+
+fn draw_loading<'a>() -> Paragraph<'a> {
+    Paragraph::new(Text::from("loading..."))
         .block(
             Block::default()
                 .borders(Borders::ALL)
