@@ -6,6 +6,12 @@ TUI image viewer
 
 ## install
 ```bash
+$ cargo install picterm
+```
+
+or
+
+```bash
 $ git clone https://github.com/ksk001100/picterm
 $ cd picterm
 $ cargo install --path .
