@@ -1,9 +1,10 @@
 pub mod handler;
 
-use std::time::Duration;
+use std::path::PathBuf;
+use image::DynamicImage;
 
 #[derive(Debug, Clone)]
 pub enum IoEvent {
     Initialize,
-    Sleep(Duration),
+    Load(PathBuf),
 }

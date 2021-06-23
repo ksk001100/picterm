@@ -39,12 +39,10 @@ impl Events {
         }
     }
 
-    /// Attempts to read an event.
     pub async fn next(&mut self) -> InputEvent {
         self.rx.recv().await.unwrap_or(InputEvent::Tick)
     }
 
-    /// Close
     pub fn close(&mut self) {
         self.stop_capture.store(true, Ordering::Relaxed)
     }

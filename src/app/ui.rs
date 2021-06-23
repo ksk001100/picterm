@@ -12,7 +12,7 @@ use tui::widgets::{
 };
 use tui::Frame;
 
-pub fn draw<B>(rect: &mut Frame<B>, app: &App)
+pub fn draw<B>(rect: &mut Frame<B>, app: &mut App)
 where
     B: Backend,
 {
@@ -40,12 +40,14 @@ where
         .constraints([Constraint::Percentage(20), Constraint::Percentage(80)].as_ref())
         .split(chunks[1]);
 
+    app.state.set_term_size(body_chunks[1].width.clone() as u32, body_chunks[1].height.clone() as u32);
+
     let mut state = ListState::default();
     state.select(app.state.get_index());
     let image_list = draw_image_list(app.state());
     rect.render_stateful_widget(image_list, body_chunks[0], &mut state);
 
-    let image = draw_image(app.state(), body_chunks[1]);
+    let image = draw_image(app.state());
     rect.render_widget(image, body_chunks[1]);
 }
 
@@ -104,36 +106,34 @@ fn draw_image_list<'a>(state: &AppState) -> List<'a> {
     )
 }
 
-fn draw_image<'a>(state: &AppState, rect: Rect) -> Paragraph<'a> {
+fn draw_image<'a>(state: &AppState) -> Paragraph<'a> {
     let mut result = vec![];
 
-    if let Some(index) = state.get_index() {
-        if let Some(path) = state.get_image(index) {
-            if let Ok(img) = image::open(path) {
-                let (w, h) = image_fit_size(&img, rect);
+    if let Some(img) = state.get_image() {
+        if let Some(size) = state.get_fit_size() {
+            let (w, h) = size;
 
-                let imgbuf = img
-                    .resize_exact(w, h, image::imageops::FilterType::Triangle)
-                    .to_rgba8();
-                let (width, height) = imgbuf.dimensions();
+            let imgbuf = img
+                .resize_exact(w, h, image::imageops::FilterType::Triangle)
+                .to_rgba8();
+            let (width, height) = imgbuf.dimensions();
 
-                for y in 0..height {
-                    let mut line = vec![];
-                    for x in 0..width {
-                        let pixel = imgbuf.get_pixel(x, y);
-                        let Rgba(data) = *pixel;
+            for y in 0..height {
+                let mut line = vec![];
+                for x in 0..width {
+                    let pixel = imgbuf.get_pixel(x, y);
+                    let Rgba(data) = *pixel;
 
-                        if data[3] == 0 {
-                            line.push(Span::styled(" ", Style::default().bg(Color::White)));
-                        } else {
-                            line.push(Span::styled(
-                                " ",
-                                Style::default().bg(Color::Rgb(data[0], data[1], data[2])),
-                            ));
-                        }
+                    if data[3] == 0 {
+                        line.push(Span::styled(" ", Style::default().bg(Color::White)));
+                    } else {
+                        line.push(Span::styled(
+                            " ",
+                            Style::default().bg(Color::Rgb(data[0], data[1], data[2])),
+                        ));
                     }
-                    result.push(Spans::from(line));
                 }
+                result.push(Spans::from(line));
             }
         }
     }
