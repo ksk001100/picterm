@@ -2,6 +2,8 @@
 
 TUI image viewer
 
+![](screenshot.png)
+
 ## install
 ```bash
 $ git clone https://github.com/ksk001100/picterm
