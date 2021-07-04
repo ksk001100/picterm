@@ -124,7 +124,7 @@ fn draw_image<'a>(state: &AppState, rect: Rect) -> Paragraph<'a> {
                         let Rgba(data) = *pixel;
 
                         if data[3] == 0 {
-                            line.push(Span::styled(" ", Style::default().bg(Color::White)));
+                            line.push(Span::from(" "));
                         } else {
                             line.push(Span::styled(
                                 " ",
