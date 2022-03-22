@@ -8,8 +8,15 @@ pub enum AppState<'a> {
     Initialized {
         images: Vec<PathBuf>,
         selected_index: usize,
-        current_image: Option<Vec<Spans<'a>>>
+        term_size: Option<TermSize>,
+        current_image: Option<Vec<Spans<'a>>>,
     },
+}
+
+#[derive(Debug, Clone)]
+pub struct TermSize {
+    pub width: u32,
+    pub height: u32,
 }
 
 impl<'a> AppState<'a> {
@@ -17,9 +24,11 @@ impl<'a> AppState<'a> {
         let images = utils::get_image_paths(path);
         let selected_index = 0;
         let current_image = None;
+        let term_size = None;
         Self::Initialized {
             images,
             selected_index,
+            term_size,
             current_image,
         }
     }
@@ -78,6 +87,20 @@ impl<'a> AppState<'a> {
     pub fn get_index(&self) -> Option<usize> {
         if let Self::Initialized { selected_index, .. } = self {
             Some(*selected_index)
+        } else {
+            None
+        }
+    }
+
+    pub fn set_term_size(&mut self, width: u32, height: u32) {
+        if let Self::Initialized { term_size, .. } = self {
+            *term_size = Some(TermSize { width, height });
+        }
+    }
+
+    pub fn get_term_size(&self) -> Option<TermSize> {
+        if let Self::Initialized { term_size, .. } = self {
+            term_size.clone()
         } else {
             None
         }

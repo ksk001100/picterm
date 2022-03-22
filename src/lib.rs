@@ -35,7 +35,7 @@ pub async fn start_ui<'a>(app: &Arc<tokio::sync::Mutex<App<'a>>>) -> Result<()> 
     loop {
         let mut app = app.lock().await;
 
-        terminal.draw(|rect| ui::draw(rect, &app))?;
+        terminal.draw(|rect| ui::draw(rect, &mut app))?;
 
         let result = match events.next().await {
             InputEvent::Input(key) => app.do_action(key).await,

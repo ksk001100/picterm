@@ -1,12 +1,10 @@
 use image::{DynamicImage, GenericImageView};
 use tui::layout::Rect;
 
-pub fn image_fit_size(img: &DynamicImage, rect: Rect) -> (u32, u32) {
+pub fn image_fit_size(img: &DynamicImage, term_w: u32, term_h: u32) -> (u32, u32) {
     let (img_width, img_height) = img.dimensions();
-    let term_w = rect.width;
-    let term_h = rect.height;
-    let (w, h) = get_dimensions(img_width, img_height, term_w as u32, term_h as u32);
-    let h = if h == term_h as u32 { h - 1 } else { h };
+    let (w, h) = get_dimensions(img_width, img_height, term_w, term_h);
+    let h = if h == term_h { h - 1 } else { h };
     (w, h)
 }
 
