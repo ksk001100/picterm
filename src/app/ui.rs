@@ -1,18 +1,17 @@
 use crate::app::state::AppState;
 use crate::app::Actions;
 use crate::app::App;
-use crate::image::image_fit_size;
-use image::Rgba;
+
 use tui::backend::Backend;
 use tui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use tui::style::{Color, Style};
-use tui::text::{Span, Spans};
+use tui::text::Span;
 use tui::widgets::{
     Block, BorderType, Borders, Cell, List, ListItem, ListState, Paragraph, Row, Table,
 };
 use tui::Frame;
 
-pub fn draw<B>(rect: &mut Frame<B>, app: &App)
+pub fn draw<B>(rect: &mut Frame<B>, app: &mut App)
 where
     B: Backend,
 {
@@ -20,7 +19,7 @@ where
 
     let chunks = Layout::default()
         .direction(Direction::Vertical)
-        .constraints([Constraint::Length(6), Constraint::Percentage(90)])
+        .constraints([Constraint::Length(8), Constraint::Percentage(90)])
         .margin(1)
         .split(size);
 
@@ -39,6 +38,9 @@ where
         .direction(Direction::Horizontal)
         .constraints([Constraint::Percentage(20), Constraint::Percentage(80)].as_ref())
         .split(chunks[1]);
+
+    app.state
+        .set_term_size(body_chunks[1].width as u32, body_chunks[1].height as u32);
 
     let mut state = ListState::default();
     state.select(app.state.get_index());
@@ -77,7 +79,7 @@ fn draw_help(actions: &Actions) -> Table {
                 .borders(Borders::ALL)
                 .border_type(BorderType::Plain),
         )
-        .widths(&[Constraint::Length(20), Constraint::Percentage(80)])
+        .widths(&[Constraint::Length(30), Constraint::Percentage(70)])
         .column_spacing(1)
 }
 
@@ -104,38 +106,11 @@ fn draw_image_list<'a>(state: &AppState) -> List<'a> {
     )
 }
 
-fn draw_image<'a>(state: &AppState, rect: Rect) -> Paragraph<'a> {
+fn draw_image<'a>(state: &'a AppState, _rect: Rect) -> Paragraph<'a> {
     let mut result = vec![];
 
-    if let Some(index) = state.get_index() {
-        if let Some(path) = state.get_image(index) {
-            if let Ok(img) = image::open(path) {
-                let (w, h) = image_fit_size(&img, rect);
-
-                let imgbuf = img
-                    .resize_exact(w, h, image::imageops::FilterType::Triangle)
-                    .to_rgba8();
-                let (width, height) = imgbuf.dimensions();
-
-                for y in 0..height {
-                    let mut line = vec![];
-                    for x in 0..width {
-                        let pixel = imgbuf.get_pixel(x, y);
-                        let Rgba(data) = *pixel;
-
-                        if data[3] == 0 {
-                            line.push(Span::from(" "));
-                        } else {
-                            line.push(Span::styled(
-                                " ",
-                                Style::default().bg(Color::Rgb(data[0], data[1], data[2])),
-                            ));
-                        }
-                    }
-                    result.push(Spans::from(line));
-                }
-            }
-        }
+    if let Some(current_image) = state.get_current_image() {
+        result = current_image;
     }
 
     Paragraph::new(result)
