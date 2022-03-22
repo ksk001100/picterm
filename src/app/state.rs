@@ -37,12 +37,6 @@ impl<'a> AppState<'a> {
         matches!(self, &Self::Initialized { .. })
     }
 
-    pub fn set_images(&mut self, imgs: Vec<PathBuf>) {
-        if let Self::Initialized { images, .. } = self {
-            *images = imgs;
-        }
-    }
-
     pub fn get_images(&self) -> Vec<PathBuf> {
         if let Self::Initialized { images, .. } = self {
             images.clone()
@@ -117,12 +111,6 @@ impl<'a> AppState<'a> {
             current_image.clone()
         } else {
             None
-        }
-    }
-
-    pub fn clear_image(&mut self) {
-        if let Self::Initialized { current_image, .. } = self {
-            *current_image = None;
         }
     }
 }

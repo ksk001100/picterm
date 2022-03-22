@@ -48,9 +48,9 @@ pub async fn start_ui<'a>(app: &Arc<tokio::sync::Mutex<App<'a>>>) -> Result<()> 
         }
     }
 
-    terminal.clear()?;
     terminal.show_cursor()?;
     crossterm::terminal::disable_raw_mode()?;
+    terminal.clear()?;
 
     Ok(())
 }

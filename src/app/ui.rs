@@ -19,7 +19,7 @@ where
 
     let chunks = Layout::default()
         .direction(Direction::Vertical)
-        .constraints([Constraint::Length(10), Constraint::Percentage(90)])
+        .constraints([Constraint::Length(8), Constraint::Percentage(90)])
         .margin(1)
         .split(size);
 
@@ -39,10 +39,8 @@ where
         .constraints([Constraint::Percentage(20), Constraint::Percentage(80)].as_ref())
         .split(chunks[1]);
 
-    app.state.set_term_size(
-        body_chunks[1].width as u32,
-        body_chunks[1].height as u32,
-    );
+    app.state
+        .set_term_size(body_chunks[1].width as u32, body_chunks[1].height as u32);
 
     let mut state = ListState::default();
     state.select(app.state.get_index());

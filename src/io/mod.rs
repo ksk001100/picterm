@@ -6,5 +6,4 @@ pub enum IoEvent {
     Increment,
     Decrement,
     LoadImage,
-    ClearImage,
 }

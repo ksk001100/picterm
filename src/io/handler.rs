@@ -22,7 +22,6 @@ impl<'a> IoAsyncHandler<'a> {
             IoEvent::Increment => self.do_increment().await,
             IoEvent::Decrement => self.do_decrement().await,
             IoEvent::LoadImage => self.do_load_image().await,
-            IoEvent::ClearImage => self.do_clear_image().await,
         };
 
         let mut app = self.app.lock().await;
@@ -46,13 +45,6 @@ impl<'a> IoAsyncHandler<'a> {
     async fn do_decrement(&mut self) -> Result<()> {
         let mut app = self.app.lock().await;
         app.state.decrement_index();
-
-        Ok(())
-    }
-
-    async fn do_clear_image(&mut self) -> Result<()> {
-        let mut app = self.app.lock().await;
-        app.state.clear_image();
 
         Ok(())
     }

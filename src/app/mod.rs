@@ -42,15 +42,11 @@ impl<'a> App<'a> {
             match action {
                 Action::Quit => AppReturn::Exit,
                 Action::Increment => {
-                    // self.dispatch(IoEvent::ClearImage).await;
                     self.dispatch(IoEvent::Increment).await;
-                    // self.dispatch(IoEvent::LoadImage).await;
                     AppReturn::Continue
                 }
                 Action::Decrement => {
-                    // self.dispatch(IoEvent::ClearImage).await;
                     self.dispatch(IoEvent::Decrement).await;
-                    // self.dispatch(IoEvent::LoadImage).await;
                     AppReturn::Continue
                 }
                 Action::Show => {

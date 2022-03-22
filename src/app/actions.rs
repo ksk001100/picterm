@@ -26,9 +26,9 @@ impl Action {
     pub fn keys(&self) -> &[Key] {
         match self {
             Action::Quit => &[Key::Char('q'), Key::Ctrl('c')],
-            Action::Increment => &[Key::Ctrl('n'), Key::Char('j'), Key::Down],
-            Action::Decrement => &[Key::Ctrl('p'), Key::Char('k'), Key::Up],
-            Action::Show => &[Key::Enter],
+            Action::Increment => &[Key::Char('j'), Key::Ctrl('n'), Key::Down],
+            Action::Decrement => &[Key::Char('k'), Key::Ctrl('p'), Key::Up],
+            Action::Show => &[Key::Enter, Key::Ctrl('m')],
         }
     }
 }
