@@ -14,14 +14,14 @@ pub enum AppReturn {
     Continue,
 }
 
-pub struct App {
+pub struct App<'a> {
     io_tx: tokio::sync::mpsc::Sender<IoEvent>,
     actions: Actions,
     is_loading: bool,
-    state: AppState,
+    state: AppState<'a>,
 }
 
-impl App {
+impl<'a> App<'a> {
     pub fn new(io_tx: tokio::sync::mpsc::Sender<IoEvent>) -> Self {
         let actions = vec![Action::Quit].into();
         let is_loading = false;
@@ -67,8 +67,13 @@ impl App {
     pub fn actions(&self) -> &Actions {
         &self.actions
     }
+
     pub fn state(&self) -> &AppState {
         &self.state
+    }
+
+    pub fn state_mut(&'a mut self) -> &'a mut AppState {
+        &mut self.state
     }
 
     pub fn is_loading(&self) -> bool {

@@ -1,22 +1,26 @@
 use crate::utils;
 use std::path::PathBuf;
+use tui::text::Spans;
 
 #[derive(Debug, Clone)]
-pub enum AppState {
+pub enum AppState<'a> {
     Init,
     Initialized {
         images: Vec<PathBuf>,
         selected_index: usize,
+        current_image: Option<Vec<Spans<'a>>>
     },
 }
 
-impl AppState {
+impl<'a> AppState<'a> {
     pub fn initialized(path: &str) -> Self {
         let images = utils::get_image_paths(path);
         let selected_index = 0;
+        let current_image = None;
         Self::Initialized {
             images,
             selected_index,
+            current_image,
         }
     }
 
@@ -54,6 +58,7 @@ impl AppState {
         if let Self::Initialized {
             selected_index,
             images,
+            ..
         } = self
         {
             if *selected_index < images.len() - 1 {
@@ -77,9 +82,23 @@ impl AppState {
             None
         }
     }
+
+    pub fn set_current_image(&mut self, img: Vec<Spans<'a>>) {
+        if let Self::Initialized { current_image, .. } = self {
+            *current_image = Some(img);
+        }
+    }
+
+    pub fn get_current_image(&self) -> Option<Vec<Spans<'a>>> {
+        if let Self::Initialized { current_image, .. } = self {
+            current_image.clone()
+        } else {
+            None
+        }
+    }
 }
 
-impl Default for AppState {
+impl<'a> Default for AppState<'a> {
     fn default() -> Self {
         Self::Init
     }
