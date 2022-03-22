@@ -24,7 +24,7 @@ pub async fn start_ui<'a>(app: &Arc<tokio::sync::Mutex<App<'a>>>) -> Result<()> 
     terminal.clear()?;
     terminal.hide_cursor()?;
 
-    let tick_rate = Duration::from_millis(200);
+    let tick_rate = Duration::from_millis(100);
     let mut events = Events::new(tick_rate);
 
     {

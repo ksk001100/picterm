@@ -1,5 +1,4 @@
 use image::{DynamicImage, GenericImageView};
-use tui::layout::Rect;
 
 pub fn image_fit_size(img: &DynamicImage, term_w: u32, term_h: u32) -> (u32, u32) {
     let (img_width, img_height) = img.dimensions();

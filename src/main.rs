@@ -10,7 +10,7 @@ use std::sync::Arc;
 async fn main() -> Result<()> {
     check_args();
 
-    let (sync_io_tx, mut sync_io_rx) = tokio::sync::mpsc::channel::<IoEvent>(100);
+    let (sync_io_tx, mut sync_io_rx) = tokio::sync::mpsc::channel::<IoEvent>(10000);
 
     let app = Arc::new(tokio::sync::Mutex::new(App::new(sync_io_tx.clone())));
     let app_ui = Arc::clone(&app);

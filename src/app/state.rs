@@ -119,6 +119,12 @@ impl<'a> AppState<'a> {
             None
         }
     }
+
+    pub fn clear_image(&mut self) {
+        if let Self::Initialized { current_image, .. } = self {
+            *current_image = None;
+        }
+    }
 }
 
 impl<'a> Default for AppState<'a> {

@@ -1,12 +1,11 @@
 use crate::app::state::AppState;
 use crate::app::Actions;
 use crate::app::App;
-use crate::image::image_fit_size;
-use image::Rgba;
+
 use tui::backend::Backend;
 use tui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use tui::style::{Color, Style};
-use tui::text::{Span, Spans};
+use tui::text::Span;
 use tui::widgets::{
     Block, BorderType, Borders, Cell, List, ListItem, ListState, Paragraph, Row, Table,
 };
@@ -20,7 +19,7 @@ where
 
     let chunks = Layout::default()
         .direction(Direction::Vertical)
-        .constraints([Constraint::Length(6), Constraint::Percentage(90)])
+        .constraints([Constraint::Length(10), Constraint::Percentage(90)])
         .margin(1)
         .split(size);
 
@@ -41,8 +40,8 @@ where
         .split(chunks[1]);
 
     app.state.set_term_size(
-        body_chunks[1].width.clone() as u32,
-        body_chunks[1].height.clone() as u32,
+        body_chunks[1].width as u32,
+        body_chunks[1].height as u32,
     );
 
     let mut state = ListState::default();
@@ -82,7 +81,7 @@ fn draw_help(actions: &Actions) -> Table {
                 .borders(Borders::ALL)
                 .border_type(BorderType::Plain),
         )
-        .widths(&[Constraint::Length(20), Constraint::Percentage(80)])
+        .widths(&[Constraint::Length(30), Constraint::Percentage(70)])
         .column_spacing(1)
 }
 
@@ -109,7 +108,7 @@ fn draw_image_list<'a>(state: &AppState) -> List<'a> {
     )
 }
 
-fn draw_image<'a>(state: &'a AppState, rect: Rect) -> Paragraph<'a> {
+fn draw_image<'a>(state: &'a AppState, _rect: Rect) -> Paragraph<'a> {
     let mut result = vec![];
 
     if let Some(current_image) = state.get_current_image() {
