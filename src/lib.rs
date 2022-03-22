@@ -7,18 +7,30 @@ pub mod utils;
 use crate::app::ui;
 use app::{App, AppReturn};
 use eyre::Result;
-use inputs::events::Events;
-use inputs::InputEvent;
+use inputs::{
+    events::Events,
+    InputEvent,
+};
 use io::IoEvent;
-use std::io::stdout;
-use std::sync::Arc;
-use std::time::Duration;
-use tui::backend::CrosstermBackend;
-use tui::Terminal;
+use std::{
+    io::stdout,
+    sync::Arc,
+    time::Duration,
+};
+use tui::{
+    backend::CrosstermBackend,
+    Terminal,
+};
+use crossterm::{
+    event::{DisableMouseCapture, EnableMouseCapture},
+    execute,
+    terminal::{disable_raw_mode, enable_raw_mode, LeaveAlternateScreen, EnterAlternateScreen},
+};
 
 pub async fn start_ui<'a>(app: &Arc<tokio::sync::Mutex<App<'a>>>) -> Result<()> {
-    let stdout = stdout();
-    crossterm::terminal::enable_raw_mode()?;
+    let mut stdout = stdout();
+    enable_raw_mode()?;
+    execute!(stdout, EnterAlternateScreen, EnableMouseCapture)?;
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend)?;
     terminal.clear()?;
@@ -48,9 +60,13 @@ pub async fn start_ui<'a>(app: &Arc<tokio::sync::Mutex<App<'a>>>) -> Result<()> 
         }
     }
 
+    disable_raw_mode()?;
+    execute!(
+        terminal.backend_mut(),
+        LeaveAlternateScreen,
+        DisableMouseCapture
+    )?;
     terminal.show_cursor()?;
-    crossterm::terminal::disable_raw_mode()?;
-    terminal.clear()?;
 
     Ok(())
 }

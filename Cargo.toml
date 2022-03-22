@@ -10,8 +10,8 @@ readme = "README.md"
 description = "TUI image viewer"
 
 [dependencies]
-crossterm = "0.18"
-tui = { version = "0.14", default-features = false, features = ['crossterm'] }
+crossterm = "0.23"
+tui = { version = "0.17", default-features = false, features = ['crossterm'] }
 image = "0.23"
 tokio = { version = "1", features = ["full"] }
 eyre = "0.6"
