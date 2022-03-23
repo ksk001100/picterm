@@ -1,8 +1,11 @@
-use super::key::Key;
-use super::InputEvent;
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::Arc;
-use std::time::Duration;
+use super::{key::Key, InputEvent};
+use std::{
+    sync::{
+        atomic::{AtomicBool, Ordering},
+        Arc,
+    },
+    time::Duration,
+};
 
 pub struct Events {
     rx: tokio::sync::mpsc::Receiver<InputEvent>,
@@ -39,12 +42,10 @@ impl Events {
         }
     }
 
-    /// Attempts to read an event.
     pub async fn next(&mut self) -> InputEvent {
         self.rx.recv().await.unwrap_or(InputEvent::Tick)
     }
 
-    /// Close
     pub fn close(&mut self) {
         self.stop_capture.store(true, Ordering::Relaxed)
     }

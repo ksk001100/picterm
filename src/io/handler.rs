@@ -1,12 +1,15 @@
-use super::IoEvent;
-use crate::app::state::ImageInfo;
-use crate::app::App;
-use crate::image::image_fit_size;
+use crate::{
+    app::{state::ImageInfo, App},
+    image::image_fit_size,
+    io::IoEvent,
+};
 use eyre::Result;
 use image::{GenericImageView, Rgba};
 use std::sync::Arc;
-use tui::style::{Color, Style};
-use tui::text::{Span, Spans};
+use tui::{
+    style::{Color, Style},
+    text::{Span, Spans},
+};
 
 pub struct IoAsyncHandler<'a> {
     app: Arc<tokio::sync::Mutex<App<'a>>>,

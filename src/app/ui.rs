@@ -1,16 +1,13 @@
-use crate::app::state::AppState;
-use crate::app::Actions;
-use crate::app::App;
-
+use crate::app::{state::AppState, Actions, App};
 use byte_unit::Byte;
-use tui::backend::Backend;
-use tui::layout::{Alignment, Constraint, Direction, Layout, Rect};
-use tui::style::{Color, Style};
-use tui::text::Span;
-use tui::widgets::{
-    Block, BorderType, Borders, Cell, List, ListItem, ListState, Paragraph, Row, Table,
+use tui::{
+    backend::Backend,
+    layout::{Alignment, Constraint, Direction, Layout, Rect},
+    style::{Color, Style},
+    text::Span,
+    widgets::{Block, BorderType, Borders, Cell, List, ListItem, ListState, Paragraph, Row, Table},
+    Frame,
 };
-use tui::Frame;
 
 pub fn draw<B>(rect: &mut Frame<B>, app: &mut App)
 where
@@ -34,7 +31,7 @@ where
 
     let info_chunks = Layout::default()
         .direction(Direction::Horizontal)
-        .constraints([Constraint::Percentage(70), Constraint::Percentage(30)].as_ref())
+        .constraints([Constraint::Percentage(20), Constraint::Percentage(80)].as_ref())
         .split(header_chunks[1]);
 
     let help = draw_help(app.actions());
@@ -103,7 +100,7 @@ fn draw_info<'a>(state: &AppState) -> Table<'a> {
                 .borders(Borders::ALL)
                 .border_type(BorderType::Plain),
         )
-        .widths(&[Constraint::Length(20), Constraint::Percentage(80)])
+        .widths(&[Constraint::Length(15), Constraint::Percentage(85)])
         .column_spacing(1)
 }
 

@@ -1,8 +1,9 @@
 use crate::inputs::key::Key;
-use std::collections::HashMap;
-use std::fmt;
-use std::fmt::Display;
-use std::slice::Iter;
+use std::{
+    collections::HashMap,
+    fmt::{self, Display},
+    slice::Iter,
+};
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Action {

@@ -1,12 +1,11 @@
 use eyre::Result;
-use picterm::app::App;
-use picterm::io::handler::IoAsyncHandler;
-use picterm::io::IoEvent;
-use picterm::start_ui;
+use picterm::{
+    app::App,
+    io::{handler::IoAsyncHandler, IoEvent},
+    start_ui,
+};
 use seahorse::{App as SeahorseApp, Context};
-use std::env;
-use std::path::Path;
-use std::sync::Arc;
+use std::{env, path::Path, sync::Arc};
 
 fn main() -> Result<()> {
     let args = env::args().collect();

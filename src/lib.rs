@@ -4,8 +4,10 @@ pub mod inputs;
 pub mod io;
 pub mod utils;
 
-use crate::app::ui;
-use app::{App, AppReturn};
+use crate::{
+    app::{ui, App, AppReturn},
+    io::IoEvent,
+};
 use crossterm::{
     event::{DisableMouseCapture, EnableMouseCapture},
     execute,
@@ -13,7 +15,6 @@ use crossterm::{
 };
 use eyre::Result;
 use inputs::{events::Events, InputEvent};
-use io::IoEvent;
 use std::{io::stdout, sync::Arc, time::Duration};
 use tui::{backend::CrosstermBackend, Terminal};
 

@@ -2,12 +2,14 @@ pub mod actions;
 pub mod state;
 pub mod ui;
 
-use self::actions::Actions;
-use self::state::AppState;
-use crate::app::actions::Action;
-
-use crate::inputs::key::Key;
-use crate::io::IoEvent;
+use crate::{
+    app::{
+        actions::{Action, Actions},
+        state::AppState,
+    },
+    inputs::key::Key,
+    io::IoEvent,
+};
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum AppReturn {
