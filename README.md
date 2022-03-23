@@ -4,7 +4,7 @@ TUI image viewer
 
 ![](screenshot.png)
 
-## install
+## Install
 ```bash
 $ cargo install picterm
 ```
@@ -17,9 +17,16 @@ $ cd picterm
 $ cargo install --path .
 ```
 
-## usage
+## Usage
 ```bash
 $ picterm # => Current directory
 $ picterm ./
 $ picterm $HOME/Downloads/
 ```
+
+## Support file format
+- PNG
+- JPG
+- WebP
+- BMP
+- GIF

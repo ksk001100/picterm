@@ -1,8 +1,9 @@
 use super::IoEvent;
+use crate::app::state::ImageInfo;
 use crate::app::App;
 use crate::image::image_fit_size;
 use eyre::Result;
-use image::Rgba;
+use image::{GenericImageView, Rgba};
 use std::sync::Arc;
 use tui::style::{Color, Style};
 use tui::text::{Span, Spans};
@@ -19,8 +20,6 @@ impl<'a> IoAsyncHandler<'a> {
     pub async fn handle_io_event(&mut self, io_event: IoEvent) {
         let _ = match io_event {
             IoEvent::Initialize => self.do_initialize().await,
-            IoEvent::Increment => self.do_increment().await,
-            IoEvent::Decrement => self.do_decrement().await,
             IoEvent::LoadImage => self.do_load_image().await,
         };
 
@@ -35,29 +34,31 @@ impl<'a> IoAsyncHandler<'a> {
         Ok(())
     }
 
-    async fn do_increment(&mut self) -> Result<()> {
-        let mut app = self.app.lock().await;
-        app.state.increment_index();
-
-        Ok(())
-    }
-
-    async fn do_decrement(&mut self) -> Result<()> {
-        let mut app = self.app.lock().await;
-        app.state.decrement_index();
-
-        Ok(())
-    }
-
     async fn do_load_image(&mut self) -> Result<()> {
         let mut app = self.app.lock().await;
-
         let mut result = vec![];
 
         if let Some(index) = app.state.get_index() {
-            if let Some(path) = app.state.get_image(index) {
+            if let Some(path) = app.state.get_path(index) {
                 if let Some(term_size) = app.state.get_term_size() {
-                    let img = tokio::task::block_in_place(move || image::open(path))?;
+                    let p = path.clone();
+                    let img = tokio::task::block_in_place(move || image::open(p))?;
+                    let name = path
+                        .file_name()
+                        .unwrap_or_default()
+                        .to_str()
+                        .unwrap()
+                        .to_string();
+                    let size = match path.metadata() {
+                        Ok(metadata) => metadata.len(),
+                        Err(_) => 0,
+                    };
+                    let info = ImageInfo {
+                        name,
+                        size,
+                        dimensions: img.dimensions(),
+                    };
+                    app.state.set_current_image_info(info);
 
                     let (w, h) = image_fit_size(&img, term_size.width, term_size.height);
                     let imgbuf = img

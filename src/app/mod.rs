@@ -42,11 +42,11 @@ impl<'a> App<'a> {
             match action {
                 Action::Quit => AppReturn::Exit,
                 Action::Increment => {
-                    self.dispatch(IoEvent::Increment).await;
+                    self.state.increment_index();
                     AppReturn::Continue
                 }
                 Action::Decrement => {
-                    self.dispatch(IoEvent::Decrement).await;
+                    self.state.decrement_index();
                     AppReturn::Continue
                 }
                 Action::Show => {

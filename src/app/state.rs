@@ -6,10 +6,11 @@ use tui::text::Spans;
 pub enum AppState<'a> {
     Init,
     Initialized {
-        images: Vec<PathBuf>,
+        paths: Vec<PathBuf>,
         selected_index: usize,
         term_size: Option<TermSize>,
         current_image: Option<Vec<Spans<'a>>>,
+        current_image_info: Option<ImageInfo>,
     },
 }
 
@@ -19,17 +20,26 @@ pub struct TermSize {
     pub height: u32,
 }
 
+#[derive(Debug, Clone)]
+pub struct ImageInfo {
+    pub name: String,
+    pub size: u64,
+    pub dimensions: (u32, u32),
+}
+
 impl<'a> AppState<'a> {
     pub fn initialized(path: &str) -> Self {
-        let images = utils::get_image_paths(path);
+        let paths = utils::get_image_paths(path);
         let selected_index = 0;
         let current_image = None;
         let term_size = None;
+        let current_image_info = None;
         Self::Initialized {
-            images,
+            paths,
             selected_index,
             term_size,
             current_image,
+            current_image_info,
         }
     }
 
@@ -37,20 +47,20 @@ impl<'a> AppState<'a> {
         matches!(self, &Self::Initialized { .. })
     }
 
-    pub fn get_images(&self) -> Vec<PathBuf> {
-        if let Self::Initialized { images, .. } = self {
-            images.clone()
+    pub fn get_paths(&self) -> Vec<PathBuf> {
+        if let Self::Initialized { paths, .. } = self {
+            paths.clone()
         } else {
             vec![]
         }
     }
 
-    pub fn get_image(&self, index: usize) -> Option<PathBuf> {
-        if let Self::Initialized { images, .. } = self {
-            if images.is_empty() {
+    pub fn get_path(&self, index: usize) -> Option<PathBuf> {
+        if let Self::Initialized { paths, .. } = self {
+            if paths.is_empty() {
                 None
             } else {
-                Some(images[index].clone())
+                Some(paths[index].clone())
             }
         } else {
             None
@@ -60,7 +70,7 @@ impl<'a> AppState<'a> {
     pub fn increment_index(&mut self) {
         if let Self::Initialized {
             selected_index,
-            images,
+            paths: images,
             ..
         } = self
         {
@@ -109,6 +119,26 @@ impl<'a> AppState<'a> {
     pub fn get_current_image(&self) -> Option<Vec<Spans<'a>>> {
         if let Self::Initialized { current_image, .. } = self {
             current_image.clone()
+        } else {
+            None
+        }
+    }
+
+    pub fn set_current_image_info(&mut self, image_info: ImageInfo) {
+        if let Self::Initialized {
+            current_image_info, ..
+        } = self
+        {
+            *current_image_info = Some(image_info);
+        }
+    }
+
+    pub fn get_current_image_info(&self) -> Option<ImageInfo> {
+        if let Self::Initialized {
+            current_image_info, ..
+        } = self
+        {
+            current_image_info.clone()
         } else {
             None
         }

@@ -6,26 +6,16 @@ pub mod utils;
 
 use crate::app::ui;
 use app::{App, AppReturn};
-use eyre::Result;
-use inputs::{
-    events::Events,
-    InputEvent,
-};
-use io::IoEvent;
-use std::{
-    io::stdout,
-    sync::Arc,
-    time::Duration,
-};
-use tui::{
-    backend::CrosstermBackend,
-    Terminal,
-};
 use crossterm::{
     event::{DisableMouseCapture, EnableMouseCapture},
     execute,
-    terminal::{disable_raw_mode, enable_raw_mode, LeaveAlternateScreen, EnterAlternateScreen},
+    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
+use eyre::Result;
+use inputs::{events::Events, InputEvent};
+use io::IoEvent;
+use std::{io::stdout, sync::Arc, time::Duration};
+use tui::{backend::CrosstermBackend, Terminal};
 
 pub async fn start_ui<'a>(app: &Arc<tokio::sync::Mutex<App<'a>>>) -> Result<()> {
     let mut stdout = stdout();

@@ -2,6 +2,7 @@ use crate::app::state::AppState;
 use crate::app::Actions;
 use crate::app::App;
 
+use byte_unit::Byte;
 use tui::backend::Backend;
 use tui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use tui::style::{Color, Style};
@@ -31,8 +32,16 @@ where
     let title = draw_title();
     rect.render_widget(title, header_chunks[0]);
 
+    let info_chunks = Layout::default()
+        .direction(Direction::Horizontal)
+        .constraints([Constraint::Percentage(70), Constraint::Percentage(30)].as_ref())
+        .split(header_chunks[1]);
+
     let help = draw_help(app.actions());
-    rect.render_widget(help, header_chunks[1]);
+    rect.render_widget(help, info_chunks[0]);
+
+    let info = draw_info(app.state());
+    rect.render_widget(info, info_chunks[1]);
 
     let body_chunks = Layout::default()
         .direction(Direction::Horizontal)
@@ -56,6 +65,46 @@ fn draw_title<'a>() -> Paragraph<'a> {
         .style(Style::default().fg(Color::LightCyan))
         .alignment(Alignment::Center)
         .block(Block::default().style(Style::default().fg(Color::White)))
+}
+
+fn draw_info<'a>(state: &AppState) -> Table<'a> {
+    let key_style = Style::default().fg(Color::LightCyan);
+    let value_style = Style::default().fg(Color::Gray);
+
+    let rows = if let Some(image_info) = state.get_current_image_info() {
+        let size = Byte::from(image_info.size)
+            .get_appropriate_unit(false)
+            .to_string();
+
+        vec![
+            Row::new(vec![
+                Cell::from(Span::styled("Name", key_style)),
+                Cell::from(Span::styled(image_info.name, value_style)),
+            ]),
+            Row::new(vec![
+                Cell::from(Span::styled("Dimensions", key_style)),
+                Cell::from(Span::styled(
+                    format!("{}x{}", image_info.dimensions.0, image_info.dimensions.1),
+                    value_style,
+                )),
+            ]),
+            Row::new(vec![
+                Cell::from(Span::styled("Size", key_style)),
+                Cell::from(Span::styled(size, value_style)),
+            ]),
+        ]
+    } else {
+        vec![]
+    };
+
+    Table::new(rows)
+        .block(
+            Block::default()
+                .borders(Borders::ALL)
+                .border_type(BorderType::Plain),
+        )
+        .widths(&[Constraint::Length(20), Constraint::Percentage(80)])
+        .column_spacing(1)
 }
 
 fn draw_help(actions: &Actions) -> Table {
@@ -85,7 +134,7 @@ fn draw_help(actions: &Actions) -> Table {
 
 fn draw_image_list<'a>(state: &AppState) -> List<'a> {
     let list_items: Vec<ListItem> = state
-        .get_images()
+        .get_paths()
         .iter()
         .map(|img| {
             ListItem::new(

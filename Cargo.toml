@@ -1,6 +1,6 @@
 [package]
 name = "picterm"
-version = "0.0.3"
+version = "0.0.4"
 authors = ["Keisuke Toyota <hm.pudding0715@gmail.com>"]
 edition = "2018"
 repository = "https://github.com/ksk001100/picterm"
@@ -15,3 +15,5 @@ tui = { version = "0.17", default-features = false, features = ['crossterm'] }
 image = "0.23"
 tokio = { version = "1", features = ["full"] }
 eyre = "0.6"
+seahorse = "2.0.0"
+byte-unit = "4.0"
