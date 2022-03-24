@@ -2,10 +2,12 @@ use crate::app::{state::AppState, Actions, App};
 use byte_unit::Byte;
 use tui::{
     backend::Backend,
-    layout::{Alignment, Constraint, Direction, Layout, Rect},
-    style::{Color, Style},
+    layout::{Alignment, Constraint, Direction, Layout},
+    style::{Color, Modifier, Style},
     text::Span,
-    widgets::{Block, BorderType, Borders, Cell, List, ListItem, ListState, Paragraph, Row, Table},
+    widgets::{
+        Block, BorderType, Borders, Cell, List, ListItem, ListState, Paragraph, Row, Table, Wrap,
+    },
     Frame,
 };
 
@@ -53,8 +55,13 @@ where
     let image_list = draw_image_list(app.state());
     rect.render_stateful_widget(image_list, body_chunks[0], &mut state);
 
-    let image = draw_image(app.state(), body_chunks[1]);
-    rect.render_widget(image, body_chunks[1]);
+    if app.is_loading() && app.state.get_current_image().is_some() {
+        let loading = draw_loading();
+        rect.render_widget(loading, body_chunks[1]);
+    } else {
+        let image = draw_image(app.state());
+        rect.render_widget(image, body_chunks[1]);
+    }
 }
 
 fn draw_title<'a>() -> Paragraph<'a> {
@@ -152,12 +159,12 @@ fn draw_image_list<'a>(state: &AppState) -> List<'a> {
     )
 }
 
-fn draw_image<'a>(state: &'a AppState, _rect: Rect) -> Paragraph<'a> {
-    let mut result = vec![];
-
-    if let Some(current_image) = state.get_current_image() {
-        result = current_image;
-    }
+fn draw_image<'a>(state: &'a AppState) -> Paragraph<'a> {
+    let result = if let Some(current_image) = state.get_current_image() {
+        current_image
+    } else {
+        vec![]
+    };
 
     Paragraph::new(result)
         .block(
@@ -167,4 +174,21 @@ fn draw_image<'a>(state: &'a AppState, _rect: Rect) -> Paragraph<'a> {
                 .border_type(BorderType::Plain),
         )
         .alignment(Alignment::Center)
+}
+
+fn draw_loading<'a>() -> Paragraph<'a> {
+    Paragraph::new(Span::styled(
+        "Loading...",
+        Style::default()
+            .fg(Color::White)
+            .add_modifier(Modifier::BOLD),
+    ))
+    .block(
+        Block::default()
+            .borders(Borders::ALL)
+            .style(Style::default().fg(Color::White))
+            .border_type(BorderType::Plain),
+    )
+    .alignment(Alignment::Center)
+    .wrap(Wrap { trim: true })
 }

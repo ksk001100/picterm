@@ -455,7 +455,7 @@ dependencies = [
 
 [[package]]
 name = "picterm"
-version = "0.0.5"
+version = "0.0.6"
 dependencies = [
  "byte-unit",
  "crossterm 0.23.1",

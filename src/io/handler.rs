@@ -38,14 +38,30 @@ impl<'a> IoAsyncHandler<'a> {
     }
 
     async fn do_load_image(&mut self) -> Result<()> {
-        let mut app = self.app.lock().await;
-        let mut result = vec![];
+        let result = Arc::new(tokio::sync::Mutex::new(vec![]));
 
-        if let Some(index) = app.state.get_index() {
-            if let Some(path) = app.state.get_path(index) {
-                if let Some(term_size) = app.state.get_term_size() {
-                    let p = path.clone();
-                    let img = tokio::task::block_in_place(move || image::open(p))?;
+        let opt_index = {
+            let app = self.app.lock().await;
+            app.state.get_index()
+        };
+
+        let opt_path = {
+            let app = self.app.lock().await;
+            match opt_index {
+                Some(index) => app.state.get_path(index),
+                None => None,
+            }
+        };
+
+        let opt_term_size = {
+            let app = self.app.lock().await;
+            app.state.get_term_size()
+        };
+
+        {
+            if let Some(path) = opt_path {
+                if let Some(term_size) = opt_term_size {
+                    let img = tokio::task::block_in_place(|| image::open(&path))?;
                     let name = path
                         .file_name()
                         .unwrap_or_default()
@@ -61,7 +77,6 @@ impl<'a> IoAsyncHandler<'a> {
                         size,
                         dimensions: img.dimensions(),
                     };
-                    app.state.set_current_image_info(info);
 
                     let (w, h) = image_fit_size(&img, term_size.width, term_size.height);
                     let imgbuf = img
@@ -69,6 +84,7 @@ impl<'a> IoAsyncHandler<'a> {
                         .to_rgba8();
                     let (width, height) = imgbuf.dimensions();
 
+                    let mut r = result.lock().await;
                     for y in 0..height {
                         let mut line = vec![];
                         for x in 0..width {
@@ -84,10 +100,12 @@ impl<'a> IoAsyncHandler<'a> {
                                 ));
                             }
                         }
-                        result.push(Spans::from(line));
+                        (*r).push(Spans::from(line));
                     }
 
-                    app.state.set_current_image(result);
+                    let mut app = self.app.lock().await;
+                    app.state.set_current_image_info(info);
+                    app.state.set_current_image((*r).clone());
                 }
             }
         }

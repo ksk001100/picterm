@@ -42,7 +42,7 @@ fn tui_main(c: &Context) {
     });
 }
 
-fn check_args(args: &Vec<String>) {
+fn check_args(args: &[String]) {
     match args.len() {
         0 => (),
         1 => {
