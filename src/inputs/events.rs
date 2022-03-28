@@ -15,7 +15,7 @@ pub struct Events {
 
 impl Events {
     pub fn new(tick_rate: Duration) -> Events {
-        let (tx, rx) = tokio::sync::mpsc::channel(100);
+        let (tx, rx) = tokio::sync::mpsc::channel(1000);
         let stop_capture = Arc::new(AtomicBool::new(false));
 
         let event_tx = tx.clone();

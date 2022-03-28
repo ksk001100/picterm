@@ -2,7 +2,7 @@
 
 TUI image viewer
 
-![](screenshot.png)
+![](assets/picterm.gif)
 
 ## Install
 ```bash
@@ -19,9 +19,12 @@ $ cargo install --path .
 
 ## Usage
 ```bash
+$ picterm --help # => Show help
+$ picterm -h
 $ picterm # => Current directory
 $ picterm ./
 $ picterm $HOME/Downloads/
+$ picterm ~/Pictures/sample.png
 ```
 
 ## Support file format
