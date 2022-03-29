@@ -53,6 +53,6 @@ pub fn print_term_image(img: DynamicImage) {
                 print!("{}", " ".bg(bg));
             }
         }
-        println!("");
+        println!();
     }
 }

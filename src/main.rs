@@ -15,7 +15,10 @@ fn main() -> Result<()> {
         .description(env!("CARGO_PKG_DESCRIPTION"))
         .author(env!("CARGO_PKG_AUTHORS"))
         .version(env!("CARGO_PKG_VERSION"))
-        .usage(format!("{} [directory or image file]", env!("CARGO_PKG_NAME")))
+        .usage(format!(
+            "{} [directory or image file]",
+            env!("CARGO_PKG_NAME")
+        ))
         .action(action);
 
     cli_app.run(args);
@@ -30,7 +33,7 @@ fn action(c: &Context) {
     }
 }
 
-fn cli_main(path: &String) {
+fn cli_main(path: &str) {
     let img = image::open(path).unwrap();
     print_term_image(img);
 }

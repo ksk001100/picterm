@@ -464,7 +464,7 @@ dependencies = [
 
 [[package]]
 name = "picterm"
-version = "0.0.7"
+version = "0.0.8"
 dependencies = [
  "ansi_rgb",
  "byte-unit",
