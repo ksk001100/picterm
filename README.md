@@ -2,6 +2,12 @@
 
 TUI image viewer
 
+[![crates.io](https://img.shields.io/crates/v/picterm.svg)](https://crates.io/crates/picterm)
+![releases count](https://img.shields.io/github/release/ksk001100/picterm.svg)
+![issues count](https://img.shields.io/github/issues/ksk001100/picterm.svg)
+![forks count](https://img.shields.io/github/forks/ksk001100/picterm.svg)
+![license](https://img.shields.io/github/license/ksk001100/picterm.svg)
+
 ![](assets/picterm.gif)
 
 ## Install
