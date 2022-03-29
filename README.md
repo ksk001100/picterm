@@ -5,6 +5,7 @@
 ![issues count](https://img.shields.io/github/issues/ksk001100/picterm.svg)
 ![forks count](https://img.shields.io/github/forks/ksk001100/picterm.svg)
 ![license](https://img.shields.io/github/license/ksk001100/picterm.svg)
+![github actions CI](https://github.com/ksk001100/picterm/workflows/CI/badge.svg?branch=main)
 
 TUI image viewer
 
