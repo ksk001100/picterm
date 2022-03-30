@@ -1,4 +1,4 @@
-use crate::utils;
+use crate::{image::ImageMode, utils};
 use std::path::PathBuf;
 use tui::text::Spans;
 
@@ -11,6 +11,7 @@ pub enum AppState<'a> {
         term_size: Option<TermSize>,
         current_image: Option<Vec<Spans<'a>>>,
         current_image_info: Option<ImageInfo>,
+        mode: ImageMode,
     },
 }
 
@@ -28,7 +29,7 @@ pub struct ImageInfo {
 }
 
 impl<'a> AppState<'a> {
-    pub fn initialized(path: &str) -> Self {
+    pub fn initialized(path: &str, mode: ImageMode) -> Self {
         let paths = utils::get_image_paths(path);
         let selected_index = 0;
         let current_image = None;
@@ -40,6 +41,7 @@ impl<'a> AppState<'a> {
             term_size,
             current_image,
             current_image_info,
+            mode,
         }
     }
 
@@ -139,6 +141,20 @@ impl<'a> AppState<'a> {
         } = self
         {
             current_image_info.clone()
+        } else {
+            None
+        }
+    }
+
+    pub fn set_image_mode(&mut self, m: ImageMode) {
+        if let Self::Initialized { mode, .. } = self {
+            *mode = m;
+        }
+    }
+
+    pub fn get_image_mode(&self) -> Option<ImageMode> {
+        if let Self::Initialized { mode, .. } = self {
+            Some(mode.clone())
         } else {
             None
         }

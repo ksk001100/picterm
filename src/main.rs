@@ -1,12 +1,12 @@
 use eyre::Result;
 use picterm::{
     app::App,
-    image::print_term_image,
+    image::{print_term_image, ImageMode},
     io::{handler::IoAsyncHandler, IoEvent},
     start_ui,
     utils::{select_mode, Mode},
 };
-use seahorse::{App as SeahorseApp, Context};
+use seahorse::{App as SeahorseApp, Context, Flag, FlagType};
 use std::{env, sync::Arc};
 
 fn main() -> Result<()> {
@@ -19,6 +19,11 @@ fn main() -> Result<()> {
             "{} [directory or image file]",
             env!("CARGO_PKG_NAME")
         ))
+        .flag(
+            Flag::new("gray", FlagType::Bool)
+                .alias("g")
+                .description("Gray scale mode"),
+        )
         .action(action);
 
     cli_app.run(args);
@@ -28,23 +33,35 @@ fn main() -> Result<()> {
 
 fn action(c: &Context) {
     match select_mode(&c.args) {
-        Mode::CLI => cli_main(&c.args[0]),
-        Mode::TUI => tui_main(),
+        Mode::CLI => cli_main(c),
+        Mode::TUI => tui_main(c),
     }
 }
 
-fn cli_main(path: &str) {
-    let img = image::open(path).unwrap();
-    print_term_image(img);
+fn cli_main(c: &Context) {
+    let img = image::open(&c.args[0]).unwrap();
+    let mode = if c.bool_flag("gray") {
+        ImageMode::GrayScale
+    } else {
+        ImageMode::Rgba
+    };
+
+    print_term_image(img, mode);
 }
 
-fn tui_main() {
+fn tui_main(c: &Context) {
     let rt = tokio::runtime::Runtime::new().unwrap();
     rt.block_on(async {
         let (sync_io_tx, mut sync_io_rx) = tokio::sync::mpsc::channel::<IoEvent>(1000);
 
         let app = Arc::new(tokio::sync::Mutex::new(App::new(sync_io_tx.clone())));
         let app_ui = Arc::clone(&app);
+
+        let mode = if c.bool_flag("gray") {
+            ImageMode::GrayScale
+        } else {
+            ImageMode::Rgba
+        };
 
         tokio::spawn(async move {
             let mut handler = IoAsyncHandler::new(app);
@@ -53,6 +70,6 @@ fn tui_main() {
             }
         });
 
-        start_ui(&app_ui).await.unwrap();
+        start_ui(&app_ui, mode).await.unwrap();
     });
 }

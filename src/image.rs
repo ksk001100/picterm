@@ -1,6 +1,12 @@
 use ansi_rgb::Background;
-use image::{DynamicImage, GenericImageView, Rgba};
+use image::{DynamicImage, GenericImageView, LumaA, Rgba};
 use rgb::RGB8;
+
+#[derive(Debug, Clone)]
+pub enum ImageMode {
+    Rgba,
+    GrayScale,
+}
 
 pub fn image_fit_size(img: &DynamicImage, term_w: u32, term_h: u32) -> (u32, u32) {
     let (img_width, img_height) = img.dimensions();
@@ -33,26 +39,45 @@ pub fn get_dimensions(width: u32, height: u32, bound_width: u32, bound_height: u
     }
 }
 
-pub fn print_term_image(img: DynamicImage) {
+pub fn print_term_image(img: DynamicImage, mode: ImageMode) {
     let size = crossterm::terminal::size().unwrap();
     let (w, h) = image_fit_size(&img, size.0 as u32, size.1 as u32);
-    let imgbuf = img
-        .resize_exact(w, h, image::imageops::FilterType::Triangle)
-        .to_rgba8();
+    let imgbuf = img.resize_exact(w, h, image::imageops::FilterType::Triangle);
     let (width, height) = imgbuf.dimensions();
 
-    for y in 0..height {
-        for x in 0..width {
-            let pixel = imgbuf.get_pixel(x, y);
-            let Rgba(data) = *pixel;
+    match mode {
+        ImageMode::Rgba => {
+            let imgbuf = imgbuf.to_rgba8();
+            for y in 0..height {
+                for x in 0..width {
+                    let pixel = imgbuf.get_pixel(x, y);
+                    let Rgba(data) = *pixel;
 
-            if data[3] == 0 {
-                print!(" ");
-            } else {
-                let bg = RGB8::new(data[0], data[1], data[2]);
-                print!("{}", " ".bg(bg));
+                    if data[3] == 0 {
+                        print!(" ");
+                    } else {
+                        let bg = RGB8::new(data[0], data[1], data[2]);
+                        print!("{}", " ".bg(bg));
+                    }
+                }
+                println!();
             }
         }
-        println!();
+        ImageMode::GrayScale => {
+            let imgbuf = imgbuf.to_luma_alpha8();
+            for y in 0..height {
+                for x in 0..width {
+                    let pixel = imgbuf.get_pixel(x, y);
+                    let LumaA(data) = *pixel;
+
+                    if data[1] == 0 {
+                        print!(" ");
+                    } else {
+                        print!("{}", " ".bg(RGB8::new(data[0], data[0], data[0])));
+                    }
+                }
+                println!();
+            }
+        }
     }
 }

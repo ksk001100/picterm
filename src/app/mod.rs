@@ -7,6 +7,7 @@ use crate::{
         actions::{Action, Actions},
         state::AppState,
     },
+    image::ImageMode,
     inputs::key::Key,
     io::IoEvent,
 };
@@ -88,7 +89,7 @@ impl<'a> App<'a> {
         self.is_loading
     }
 
-    pub fn initialized(&mut self) {
+    pub fn initialized(&mut self, mode: ImageMode) {
         let args: Vec<String> = std::env::args().collect();
         let path = if args[1..].is_empty() { "./" } else { &args[1] };
         self.actions = vec![
@@ -98,7 +99,7 @@ impl<'a> App<'a> {
             Action::Show,
         ]
         .into();
-        self.state = AppState::initialized(path);
+        self.state = AppState::initialized(path, mode);
     }
 
     pub fn loaded(&mut self) {

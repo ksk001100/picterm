@@ -6,6 +6,7 @@ pub mod utils;
 
 use crate::{
     app::{ui, App, AppReturn},
+    image::ImageMode,
     io::IoEvent,
 };
 use crossterm::{
@@ -18,7 +19,7 @@ use inputs::{events::Events, InputEvent};
 use std::{io::stdout, sync::Arc, time::Duration};
 use tui::{backend::CrosstermBackend, Terminal};
 
-pub async fn start_ui<'a>(app: &Arc<tokio::sync::Mutex<App<'a>>>) -> Result<()> {
+pub async fn start_ui<'a>(app: &Arc<tokio::sync::Mutex<App<'a>>>, mode: ImageMode) -> Result<()> {
     let mut stdout = stdout();
     enable_raw_mode()?;
     execute!(stdout, EnterAlternateScreen, EnableMouseCapture)?;
@@ -32,7 +33,7 @@ pub async fn start_ui<'a>(app: &Arc<tokio::sync::Mutex<App<'a>>>) -> Result<()> 
 
     {
         let mut app = app.lock().await;
-        app.dispatch(IoEvent::Initialize).await;
+        app.dispatch(IoEvent::Initialize(mode)).await;
     }
 
     loop {
