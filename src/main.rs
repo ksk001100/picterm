@@ -57,6 +57,11 @@ fn tui_main(c: &Context) {
         let app = Arc::new(tokio::sync::Mutex::new(App::new(sync_io_tx.clone())));
         let app_ui = Arc::clone(&app);
 
+        let path = match c.args.len() {
+            1 => c.args[0].clone(),
+            _ => "./".to_string(),
+        };
+
         let mode = if c.bool_flag("gray") {
             ImageMode::GrayScale
         } else {
@@ -70,6 +75,6 @@ fn tui_main(c: &Context) {
             }
         });
 
-        start_ui(&app_ui, mode).await.unwrap();
+        start_ui(&app_ui, path, mode).await.unwrap();
     });
 }

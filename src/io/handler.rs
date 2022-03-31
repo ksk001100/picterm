@@ -22,7 +22,7 @@ impl<'a> IoAsyncHandler<'a> {
 
     pub async fn handle_io_event(&mut self, io_event: IoEvent) {
         let _ = match io_event {
-            IoEvent::Initialize(mode) => self.do_initialize(mode).await,
+            IoEvent::Initialize(path, mode) => self.do_initialize(&path, mode).await,
             IoEvent::LoadImage => self.do_load_image().await,
         };
 
@@ -30,9 +30,9 @@ impl<'a> IoAsyncHandler<'a> {
         app.loaded();
     }
 
-    async fn do_initialize(&mut self, mode: ImageMode) -> Result<()> {
+    async fn do_initialize(&mut self, path: &str, mode: ImageMode) -> Result<()> {
         let mut app = self.app.lock().await;
-        app.initialized(mode);
+        app.initialized(path, mode);
 
         Ok(())
     }

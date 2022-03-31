@@ -4,6 +4,6 @@ use crate::image::ImageMode;
 
 #[derive(Debug, Clone)]
 pub enum IoEvent {
-    Initialize(ImageMode),
+    Initialize(String, ImageMode),
     LoadImage,
 }

@@ -89,9 +89,7 @@ impl<'a> App<'a> {
         self.is_loading
     }
 
-    pub fn initialized(&mut self, mode: ImageMode) {
-        let args: Vec<String> = std::env::args().collect();
-        let path = if args[1..].is_empty() { "./" } else { &args[1] };
+    pub fn initialized(&mut self, path: &str, mode: ImageMode) {
         self.actions = vec![
             Action::Quit,
             Action::Increment,

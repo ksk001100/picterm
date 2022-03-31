@@ -19,7 +19,11 @@ use inputs::{events::Events, InputEvent};
 use std::{io::stdout, sync::Arc, time::Duration};
 use tui::{backend::CrosstermBackend, Terminal};
 
-pub async fn start_ui<'a>(app: &Arc<tokio::sync::Mutex<App<'a>>>, mode: ImageMode) -> Result<()> {
+pub async fn start_ui<'a>(
+    app: &Arc<tokio::sync::Mutex<App<'a>>>,
+    path: String,
+    mode: ImageMode,
+) -> Result<()> {
     let mut stdout = stdout();
     enable_raw_mode()?;
     execute!(stdout, EnterAlternateScreen, EnableMouseCapture)?;
@@ -33,7 +37,7 @@ pub async fn start_ui<'a>(app: &Arc<tokio::sync::Mutex<App<'a>>>, mode: ImageMod
 
     {
         let mut app = app.lock().await;
-        app.dispatch(IoEvent::Initialize(mode)).await;
+        app.dispatch(IoEvent::Initialize(path, mode)).await;
     }
 
     loop {
