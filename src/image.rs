@@ -1,12 +1,7 @@
+use crate::utils::ImageMode;
 use ansi_rgb::Background;
 use image::{DynamicImage, GenericImageView, LumaA, Rgba};
 use rgb::RGB8;
-
-#[derive(Debug, Clone)]
-pub enum ImageMode {
-    Rgba,
-    GrayScale,
-}
 
 pub fn image_fit_size(img: &DynamicImage, term_w: u32, term_h: u32) -> (u32, u32) {
     let (img_width, img_height) = img.dimensions();

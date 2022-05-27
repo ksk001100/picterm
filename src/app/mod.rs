@@ -7,9 +7,9 @@ use crate::{
         actions::{Action, Actions},
         state::AppState,
     },
-    image::ImageMode,
     inputs::key::Key,
     io::IoEvent,
+    utils::ImageMode,
 };
 
 #[derive(Debug, PartialEq, Eq)]
@@ -18,25 +18,33 @@ pub enum AppReturn {
     Continue,
 }
 
+#[derive(Debug, Clone)]
+pub struct AppConfig {
+    pub image_mode: ImageMode,
+}
+
 #[derive(Clone)]
 pub struct App<'a> {
     io_tx: tokio::sync::mpsc::Sender<IoEvent>,
     actions: Actions,
     is_loading: bool,
     pub state: AppState<'a>,
+    pub config: AppConfig,
 }
 
 impl<'a> App<'a> {
-    pub fn new(io_tx: tokio::sync::mpsc::Sender<IoEvent>) -> Self {
+    pub fn new(io_tx: tokio::sync::mpsc::Sender<IoEvent>, image_mode: ImageMode) -> Self {
         let actions = vec![Action::Quit].into();
         let is_loading = false;
         let state = AppState::default();
+        let config = AppConfig { image_mode };
 
         Self {
             io_tx,
             actions,
             is_loading,
             state,
+            config,
         }
     }
 
@@ -89,7 +97,7 @@ impl<'a> App<'a> {
         self.is_loading
     }
 
-    pub fn initialized(&mut self, path: &str, mode: ImageMode) {
+    pub fn initialized(&mut self, path: &str) {
         self.actions = vec![
             Action::Quit,
             Action::Increment,
@@ -97,7 +105,7 @@ impl<'a> App<'a> {
             Action::Show,
         ]
         .into();
-        self.state = AppState::initialized(path, mode);
+        self.state = AppState::initialized(path);
     }
 
     pub fn loaded(&mut self) {

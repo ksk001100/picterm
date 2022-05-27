@@ -5,9 +5,16 @@ use std::{
 
 static FILE_TYPES: [&str; 6] = ["png", "jpg", "jpeg", "webp", "bmp", "gif"];
 
-pub enum Mode {
+#[derive(Debug, Clone)]
+pub enum RunMode {
     CLI,
     TUI,
+}
+
+#[derive(Debug, Clone)]
+pub enum ImageMode {
+    Rgba,
+    GrayScale,
 }
 
 pub fn get_image_paths(path: &str) -> Vec<PathBuf> {
@@ -26,16 +33,16 @@ pub fn get_image_paths(path: &str) -> Vec<PathBuf> {
     result
 }
 
-pub fn select_mode(args: &[String]) -> Mode {
+pub fn select_mode(args: &[String]) -> RunMode {
     match args.len() {
-        0 => Mode::TUI,
+        0 => RunMode::TUI,
         1 => {
             if Path::new(&args[0]).is_dir() {
-                Mode::TUI
+                RunMode::TUI
             } else if FILE_TYPES
                 .contains(&Path::new(&args[0]).extension().unwrap().to_str().unwrap())
             {
-                Mode::CLI
+                RunMode::CLI
             } else {
                 eprintln!("The argument must be a directory or a single image file.");
                 std::process::exit(1);

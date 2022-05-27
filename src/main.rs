@@ -1,10 +1,10 @@
 use eyre::Result;
 use picterm::{
     app::App,
-    image::{print_term_image, ImageMode},
+    image::print_term_image,
     io::{handler::IoAsyncHandler, IoEvent},
     start_ui,
-    utils::{select_mode, Mode},
+    utils::{select_mode, ImageMode, RunMode},
 };
 use seahorse::{App as SeahorseApp, Context, Flag, FlagType};
 use std::{env, sync::Arc};
@@ -33,8 +33,8 @@ fn main() -> Result<()> {
 
 fn action(c: &Context) {
     match select_mode(&c.args) {
-        Mode::CLI => cli_main(c),
-        Mode::TUI => tui_main(c),
+        RunMode::CLI => cli_main(c),
+        RunMode::TUI => tui_main(c),
     }
 }
 
@@ -53,19 +53,18 @@ fn tui_main(c: &Context) {
     let rt = tokio::runtime::Runtime::new().unwrap();
     rt.block_on(async {
         let (sync_io_tx, mut sync_io_rx) = tokio::sync::mpsc::channel::<IoEvent>(1000);
+        let mode = if c.bool_flag("gray") {
+            ImageMode::GrayScale
+        } else {
+            ImageMode::Rgba
+        };
 
-        let app = Arc::new(tokio::sync::Mutex::new(App::new(sync_io_tx.clone())));
+        let app = Arc::new(tokio::sync::Mutex::new(App::new(sync_io_tx.clone(), mode)));
         let app_ui = Arc::clone(&app);
 
         let path = match c.args.len() {
             1 => c.args[0].clone(),
             _ => "./".to_string(),
-        };
-
-        let mode = if c.bool_flag("gray") {
-            ImageMode::GrayScale
-        } else {
-            ImageMode::Rgba
         };
 
         tokio::spawn(async move {
@@ -75,6 +74,6 @@ fn tui_main(c: &Context) {
             }
         });
 
-        start_ui(&app_ui, path, mode).await.unwrap();
+        start_ui(&app_ui, path).await.unwrap();
     });
 }

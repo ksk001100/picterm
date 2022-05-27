@@ -1,7 +1,8 @@
 use crate::{
     app::{state::ImageInfo, App},
-    image::{image_fit_size, ImageMode},
+    image::image_fit_size,
     io::IoEvent,
+    utils::ImageMode,
 };
 use eyre::Result;
 use image::{GenericImageView, LumaA, Rgba};
@@ -22,7 +23,7 @@ impl<'a> IoAsyncHandler<'a> {
 
     pub async fn handle_io_event(&mut self, io_event: IoEvent) {
         let _ = match io_event {
-            IoEvent::Initialize(path, mode) => self.do_initialize(&path, mode).await,
+            IoEvent::Initialize(path) => self.do_initialize(&path).await,
             IoEvent::LoadImage => self.do_load_image().await,
         };
 
@@ -30,9 +31,9 @@ impl<'a> IoAsyncHandler<'a> {
         app.loaded();
     }
 
-    async fn do_initialize(&mut self, path: &str, mode: ImageMode) -> Result<()> {
+    async fn do_initialize(&mut self, path: &str) -> Result<()> {
         let mut app = self.app.lock().await;
-        app.initialized(path, mode);
+        app.initialized(path);
 
         Ok(())
     }
@@ -58,9 +59,9 @@ impl<'a> IoAsyncHandler<'a> {
             app.state.get_term_size()
         };
 
-        let opt_mode = {
+        let mode = {
             let app = self.app.lock().await;
-            app.state.get_image_mode()
+            app.config.image_mode.clone()
         };
 
         {
@@ -89,49 +90,47 @@ impl<'a> IoAsyncHandler<'a> {
 
                     let mut r = result.lock().await;
 
-                    if let Some(mode) = opt_mode {
-                        match mode {
-                            ImageMode::Rgba => {
-                                let imgbuf = imgbuf.to_rgba8();
-                                for y in 0..height {
-                                    let mut line = vec![];
-                                    for x in 0..width {
-                                        let pixel = imgbuf.get_pixel(x, y);
-                                        let Rgba(data) = *pixel;
+                    match mode {
+                        ImageMode::Rgba => {
+                            let imgbuf = imgbuf.to_rgba8();
+                            for y in 0..height {
+                                let mut line = vec![];
+                                for x in 0..width {
+                                    let pixel = imgbuf.get_pixel(x, y);
+                                    let Rgba(data) = *pixel;
 
-                                        if data[3] == 0 {
-                                            line.push(Span::from(" "));
-                                        } else {
-                                            line.push(Span::styled(
-                                                " ",
-                                                Style::default()
-                                                    .bg(Color::Rgb(data[0], data[1], data[2])),
-                                            ));
-                                        }
+                                    if data[3] == 0 {
+                                        line.push(Span::from(" "));
+                                    } else {
+                                        line.push(Span::styled(
+                                            " ",
+                                            Style::default()
+                                                .bg(Color::Rgb(data[0], data[1], data[2])),
+                                        ));
                                     }
-                                    (*r).push(Spans::from(line))
                                 }
+                                (*r).push(Spans::from(line))
                             }
-                            ImageMode::GrayScale => {
-                                let imgbuf = imgbuf.to_luma_alpha8();
-                                for y in 0..height {
-                                    let mut line = vec![];
-                                    for x in 0..width {
-                                        let pixel = imgbuf.get_pixel(x, y);
-                                        let LumaA(data) = *pixel;
+                        }
+                        ImageMode::GrayScale => {
+                            let imgbuf = imgbuf.to_luma_alpha8();
+                            for y in 0..height {
+                                let mut line = vec![];
+                                for x in 0..width {
+                                    let pixel = imgbuf.get_pixel(x, y);
+                                    let LumaA(data) = *pixel;
 
-                                        if data[1] == 0 {
-                                            line.push(Span::from(" "));
-                                        } else {
-                                            line.push(Span::styled(
-                                                " ",
-                                                Style::default()
-                                                    .bg(Color::Rgb(data[0], data[0], data[0])),
-                                            ));
-                                        }
+                                    if data[1] == 0 {
+                                        line.push(Span::from(" "));
+                                    } else {
+                                        line.push(Span::styled(
+                                            " ",
+                                            Style::default()
+                                                .bg(Color::Rgb(data[0], data[0], data[0])),
+                                        ));
                                     }
-                                    (*r).push(Spans::from(line))
                                 }
+                                (*r).push(Spans::from(line))
                             }
                         }
                     }
