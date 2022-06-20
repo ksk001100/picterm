@@ -24,6 +24,9 @@ $ git clone https://github.com/ksk001100/picterm
 $ cd picterm
 $ cargo install --path .
 ```
+or
+
+Download [here](https://github.com/ksk001100/picterm/releases)
 
 ## Usage
 ```bash
