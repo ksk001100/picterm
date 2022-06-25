@@ -16,9 +16,9 @@ checksum = "aae1277d39aeec15cb388266ecc24b11c80469deae6067e17a1a7aa9e5c1f234"
 
 [[package]]
 name = "ansi_rgb"
-version = "0.2.0"
+version = "0.3.2-alpha"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a730095eb14ee842a0f1e68504b85c8d4a19b1ef2ac2a9b4debf0ed982f9b08a"
+checksum = "9f2916ece1f4834fa424632f76e3a93e677de5fd05dbbf5680bbbc4ab6058ad9"
 dependencies = [
  "rgb",
 ]
