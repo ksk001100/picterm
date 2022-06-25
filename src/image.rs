@@ -1,5 +1,5 @@
 use crate::utils::ImageMode;
-use ansi_rgb::Background;
+use ansi_rgb::Colorable;
 use image::{DynamicImage, GenericImageView, LumaA, Rgba};
 use rgb::RGB8;
 
