@@ -30,9 +30,7 @@ pub fn get_image_paths(path: &str) -> Vec<PathBuf> {
         }
     }
 
-    result.sort_by(|a, b| {
-        a.file_name().cmp(&b.file_name())
-    });
+    result.sort_by(|a, b| a.file_name().cmp(&b.file_name()));
 
     result
 }
