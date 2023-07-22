@@ -1,6 +1,6 @@
 [package]
 name = "picterm"
-version = "0.0.12"
+version = "0.0.11"
 authors = ["Keisuke Toyota <hm.pudding0715@gmail.com>"]
 edition = "2018"
 repository = "https://github.com/ksk001100/picterm"
