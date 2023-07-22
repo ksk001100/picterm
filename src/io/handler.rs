@@ -9,7 +9,7 @@ use image::{GenericImageView, LumaA, Rgba};
 use std::sync::Arc;
 use tui::{
     style::{Color, Style},
-    text::{Span, Line},
+    text::{Line, Span},
 };
 
 pub struct IoAsyncHandler<'a> {

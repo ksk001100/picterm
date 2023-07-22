@@ -6,13 +6,13 @@ mod loading;
 mod title;
 
 use crate::app::App;
+use std::rc::Rc;
 use tui::{
     backend::Backend,
     layout::{Constraint, Direction, Layout, Rect},
     widgets::ListState,
     Frame,
 };
-use std::rc::Rc;
 
 pub fn draw<B>(rect: &mut Frame<B>, app: &mut App)
 where
