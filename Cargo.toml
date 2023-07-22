@@ -11,7 +11,7 @@ description = "TUI image viewer"
 
 [dependencies]
 crossterm = "0.23"
-tui = { version = "0.17", default-features = false, features = ['crossterm'] }
+tui = { package = "ratatui", version = "0.22", features = ["all-widgets"]}
 image = "0.23"
 tokio = { version = "1", features = ["full"] }
 eyre = "0.6"

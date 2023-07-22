@@ -9,7 +9,7 @@ use image::{GenericImageView, LumaA, Rgba};
 use std::sync::Arc;
 use tui::{
     style::{Color, Style},
-    text::{Span, Spans},
+    text::{Span, Line},
 };
 
 pub struct IoAsyncHandler<'a> {
@@ -109,7 +109,7 @@ impl<'a> IoAsyncHandler<'a> {
                                         ));
                                     }
                                 }
-                                (*r).push(Spans::from(line))
+                                (*r).push(Line::from(line))
                             }
                         }
                         ImageMode::GrayScale => {
@@ -130,7 +130,7 @@ impl<'a> IoAsyncHandler<'a> {
                                         ));
                                     }
                                 }
-                                (*r).push(Spans::from(line))
+                                (*r).push(Line::from(line))
                             }
                         }
                     }

@@ -12,6 +12,7 @@ use tui::{
     widgets::ListState,
     Frame,
 };
+use std::rc::Rc;
 
 pub fn draw<B>(rect: &mut Frame<B>, app: &mut App)
 where
@@ -50,7 +51,7 @@ where
     }
 }
 
-fn main_layout(rect: Rect) -> Vec<Rect> {
+fn main_layout(rect: Rect) -> Rc<[Rect]> {
     Layout::default()
         .direction(Direction::Vertical)
         .constraints([Constraint::Length(8), Constraint::Percentage(90)])
@@ -58,21 +59,21 @@ fn main_layout(rect: Rect) -> Vec<Rect> {
         .split(rect)
 }
 
-fn header_layout(rect: Rect) -> Vec<Rect> {
+fn header_layout(rect: Rect) -> Rc<[Rect]> {
     Layout::default()
         .direction(Direction::Vertical)
         .constraints([Constraint::Percentage(30), Constraint::Percentage(70)])
         .split(rect)
 }
 
-fn info_layout(rect: Rect) -> Vec<Rect> {
+fn info_layout(rect: Rect) -> Rc<[Rect]> {
     Layout::default()
         .direction(Direction::Horizontal)
         .constraints([Constraint::Percentage(20), Constraint::Percentage(80)].as_ref())
         .split(rect)
 }
 
-fn body_layout(rect: Rect) -> Vec<Rect> {
+fn body_layout(rect: Rect) -> Rc<[Rect]> {
     Layout::default()
         .direction(Direction::Horizontal)
         .constraints([Constraint::Percentage(20), Constraint::Percentage(80)].as_ref())

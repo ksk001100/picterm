@@ -1,6 +1,6 @@
 use crate::utils;
 use std::path::PathBuf;
-use tui::text::Spans;
+use tui::text::Line;
 
 #[derive(Debug, Clone)]
 pub enum AppState<'a> {
@@ -9,7 +9,7 @@ pub enum AppState<'a> {
         paths: Vec<PathBuf>,
         selected_index: usize,
         term_size: Option<TermSize>,
-        current_image: Option<Vec<Spans<'a>>>,
+        current_image: Option<Vec<Line<'a>>>,
         current_image_info: Option<ImageInfo>,
     },
 }
@@ -110,13 +110,13 @@ impl<'a> AppState<'a> {
         }
     }
 
-    pub fn set_current_image(&mut self, img: Vec<Spans<'a>>) {
+    pub fn set_current_image(&mut self, img: Vec<Line<'a>>) {
         if let Self::Initialized { current_image, .. } = self {
             *current_image = Some(img);
         }
     }
 
-    pub fn get_current_image(&self) -> Option<Vec<Spans<'a>>> {
+    pub fn get_current_image(&self) -> Option<Vec<Line<'a>>> {
         if let Self::Initialized { current_image, .. } = self {
             current_image.clone()
         } else {
