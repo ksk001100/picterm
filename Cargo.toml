@@ -13,7 +13,7 @@ description = "TUI image viewer"
 crossterm = "0.23"
 tui = { package = "ratatui", version = "0.22", features = ["all-widgets"]}
 image = "0.23"
-tokio = { version = "1", features = ["full"] }
+tokio = { version = "1.32", features = ["full"] }
 eyre = "0.6"
 seahorse = "2.0.0"
 byte-unit = "4.0"
