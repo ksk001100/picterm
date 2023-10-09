@@ -74,17 +74,28 @@ impl<'a> AppState<'a> {
             ..
         } = self
         {
-            if *selected_index < images.len() - 1 {
-                *selected_index += 1;
+            *selected_index += 1;
+            if *selected_index >= images.len() {
+                *selected_index = 0;
             }
         }
     }
 
     pub fn decrement_index(&mut self) {
-        if let Self::Initialized { selected_index, .. } = self {
-            if *selected_index > 0 {
-                *selected_index -= 1;
+        if let Self::Initialized {
+            selected_index,
+            paths: images,
+            ..
+        } = self
+        {
+            if images.is_empty() {
+                return;
             }
+
+            if *selected_index == 0 {
+                *selected_index = images.len();
+            }
+            *selected_index -= 1;
         }
     }
 
