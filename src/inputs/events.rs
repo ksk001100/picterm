@@ -9,7 +9,6 @@ use std::{
 
 pub struct Events {
     rx: tokio::sync::mpsc::Receiver<InputEvent>,
-    _tx: tokio::sync::mpsc::Sender<InputEvent>,
     stop_capture: Arc<AtomicBool>,
 }
 
@@ -35,11 +34,7 @@ impl Events {
             }
         });
 
-        Events {
-            rx,
-            _tx: tx,
-            stop_capture,
-        }
+        Events { rx, stop_capture }
     }
 
     pub async fn next(&mut self) -> InputEvent {
