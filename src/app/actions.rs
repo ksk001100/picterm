@@ -11,15 +11,17 @@ pub enum Action {
     Increment,
     Decrement,
     Show,
+    Search,
 }
 
 impl Action {
     pub fn iterator() -> Iter<'static, Action> {
-        static ACTIONS: [Action; 4] = [
+        static ACTIONS: [Action; 5] = [
             Action::Quit,
             Action::Increment,
             Action::Decrement,
             Action::Show,
+            Action::Search,
         ];
         ACTIONS.iter()
     }
@@ -30,6 +32,7 @@ impl Action {
             Action::Increment => &[Key::Char('j'), Key::Ctrl('n'), Key::Down],
             Action::Decrement => &[Key::Char('k'), Key::Ctrl('p'), Key::Up],
             Action::Show => &[Key::Enter, Key::Ctrl('m')],
+            Action::Search => &[Key::Char('/'), Key::Ctrl('f')],
         }
     }
 }
@@ -41,6 +44,7 @@ impl Display for Action {
             Action::Increment => "Next",
             Action::Decrement => "Prev",
             Action::Show => "Show",
+            Action::Search => "Search",
         };
         write!(f, "{}", str)
     }
