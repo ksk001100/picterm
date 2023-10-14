@@ -81,9 +81,12 @@ impl<'a> App<'a> {
                 let search_term = self.state.get_search_term();
 
                 match key {
-                    Key::Backspace => self
-                        .state
-                        .set_search_term(search_term[..search_term.len() - 1].to_string()),
+                    Key::Backspace => {
+                        if search_term.len() > 0 {
+                            self.state
+                                .set_search_term(search_term[..search_term.len() - 1].to_string())
+                        }
+                    }
                     Key::Esc => {
                         self.state.set_search_term("".to_string());
                         self.state.set_app_mode(AppMode::Normal);
