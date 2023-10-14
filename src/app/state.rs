@@ -2,6 +2,10 @@ use crate::utils;
 use std::path::PathBuf;
 use tui::text::Line;
 
+pub enum AppMode {
+    Normal,
+    Search,
+}
 #[derive(Debug, Clone)]
 pub enum AppState<'a> {
     Init,
@@ -11,6 +15,7 @@ pub enum AppState<'a> {
         term_size: Option<TermSize>,
         current_image: Option<Vec<Line<'a>>>,
         current_image_info: Option<ImageInfo>,
+        app_mode: AppMode,
     },
 }
 
@@ -34,12 +39,14 @@ impl<'a> AppState<'a> {
         let current_image = None;
         let term_size = None;
         let current_image_info = None;
+        let app_mode = AppMode::Normal;
         Self::Initialized {
             paths,
             selected_index,
             term_size,
             current_image,
             current_image_info,
+            app_mode,
         }
     }
 
@@ -153,6 +160,18 @@ impl<'a> AppState<'a> {
         } else {
             None
         }
+    }
+
+    pub fn set_app_mode(&mut self, mode: AppMode) {
+        if let Self::Initialized { app_mode, .. } = self {
+            *app_mode = mode;
+        }
+    }
+    pub fn get_app_mode(&self) -> AppMode {
+        let Self::Initialized { app_mode, .. } = self else {
+            return AppMode::Normal;
+        };
+        app_mode.clone()
     }
 }
 
