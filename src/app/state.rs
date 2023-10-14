@@ -1,4 +1,5 @@
 use crate::utils;
+use fuzzy_matcher::{skim::SkimMatcherV2, FuzzyMatcher};
 use std::path::PathBuf;
 use tui::text::Line;
 
@@ -13,6 +14,7 @@ pub enum AppState<'a> {
     Init,
     Initialized {
         paths: Vec<PathBuf>,
+        path: String,
         selected_index: usize,
         term_size: Option<TermSize>,
         current_image: Option<Vec<Line<'a>>>,
@@ -46,6 +48,7 @@ impl<'a> AppState<'a> {
         let app_mode = AppMode::Normal;
         Self::Initialized {
             paths,
+            path: path.to_string(),
             selected_index,
             term_size,
             current_image,
@@ -64,6 +67,36 @@ impl<'a> AppState<'a> {
             paths.clone()
         } else {
             vec![]
+        }
+    }
+
+    pub fn filter_paths(&mut self) {
+        if let Self::Initialized {
+            paths: self_paths,
+            path,
+            search_term,
+            ..
+        } = self
+        {
+            let matcher = SkimMatcherV2::default();
+
+            // TODO: Load the image paths only once and filter it there.
+            let paths = utils::get_image_paths(path)
+                .into_iter()
+                .filter(|path| {
+                    let file_name = path
+                        .file_name()
+                        .unwrap()
+                        .to_os_string()
+                        .into_string()
+                        .unwrap();
+                    match matcher.fuzzy_match(&file_name, search_term) {
+                        Some(_) => true,
+                        None => false,
+                    }
+                })
+                .collect();
+            *self_paths = paths;
         }
     }
 

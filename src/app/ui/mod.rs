@@ -33,13 +33,11 @@ where
     let title = title::draw();
     let help = help::draw(app.actions());
     let info = info::draw(app.state());
+    let image_list = image_list::draw(app.state());
 
     rect.render_widget(title, header_chunks[0]);
     rect.render_widget(help, info_chunks[0]);
     rect.render_widget(info, info_chunks[1]);
-
-    let search_term = app.state.get_search_term();
-    let image_list = image_list::draw(app.state(), search_term);
 
     if app.state.get_app_mode() == AppMode::Search {
         let block = search::draw(app.state.get_search_term());

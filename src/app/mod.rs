@@ -96,6 +96,7 @@ impl<'a> App<'a> {
                         .set_search_term(format!("{}{}", search_term, oth.key_char())),
                 }
 
+                self.state.filter_paths();
                 return AppReturn::Continue;
             }
         }
