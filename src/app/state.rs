@@ -6,6 +6,7 @@ pub enum AppMode {
     Normal,
     Search,
 }
+
 #[derive(Debug, Clone)]
 pub enum AppState<'a> {
     Init,
@@ -15,6 +16,7 @@ pub enum AppState<'a> {
         term_size: Option<TermSize>,
         current_image: Option<Vec<Line<'a>>>,
         current_image_info: Option<ImageInfo>,
+        search_term: String,
         app_mode: AppMode,
     },
 }
@@ -39,6 +41,7 @@ impl<'a> AppState<'a> {
         let current_image = None;
         let term_size = None;
         let current_image_info = None;
+        let search_term = "".to_string();
         let app_mode = AppMode::Normal;
         Self::Initialized {
             paths,
@@ -46,6 +49,7 @@ impl<'a> AppState<'a> {
             term_size,
             current_image,
             current_image_info,
+            search_term,
             app_mode,
         }
     }
@@ -159,6 +163,19 @@ impl<'a> AppState<'a> {
             current_image_info.clone()
         } else {
             None
+        }
+    }
+
+    pub fn get_search_term(&self) -> &str {
+        let Self::Initialized { search_term, .. } = self else {
+            return "";
+        };
+        search_term.as_ref()
+    }
+
+    pub fn set_search_term(&mut self, arg: String) {
+        if let Self::Initialized { search_term, .. } = self {
+            *search_term = arg;
         }
     }
 
