@@ -2,6 +2,7 @@ use crate::utils;
 use std::path::PathBuf;
 use tui::text::Line;
 
+#[derive(Debug, Clone, PartialEq)]
 pub enum AppMode {
     Normal,
     Search,
