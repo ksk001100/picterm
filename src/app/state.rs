@@ -1,16 +1,26 @@
 use crate::utils;
+use fuzzy_matcher::{skim::SkimMatcherV2, FuzzyMatcher};
 use std::path::PathBuf;
 use tui::text::Line;
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum AppMode {
+    Normal,
+    Search,
+}
 
 #[derive(Debug, Clone)]
 pub enum AppState<'a> {
     Init,
     Initialized {
         paths: Vec<PathBuf>,
+        path: String,
         selected_index: usize,
         term_size: Option<TermSize>,
         current_image: Option<Vec<Line<'a>>>,
         current_image_info: Option<ImageInfo>,
+        search_term: String,
+        app_mode: AppMode,
     },
 }
 
@@ -34,12 +44,17 @@ impl<'a> AppState<'a> {
         let current_image = None;
         let term_size = None;
         let current_image_info = None;
+        let search_term = "".to_string();
+        let app_mode = AppMode::Normal;
         Self::Initialized {
             paths,
+            path: path.to_string(),
             selected_index,
             term_size,
             current_image,
             current_image_info,
+            search_term,
+            app_mode,
         }
     }
 
@@ -52,6 +67,36 @@ impl<'a> AppState<'a> {
             paths.clone()
         } else {
             vec![]
+        }
+    }
+
+    pub fn filter_paths(&mut self) {
+        if let Self::Initialized {
+            paths: self_paths,
+            path,
+            search_term,
+            ..
+        } = self
+        {
+            let matcher = SkimMatcherV2::default();
+
+            // TODO: Load the image paths only once and filter it there.
+            let paths = utils::get_image_paths(path)
+                .into_iter()
+                .filter(|path| {
+                    let file_name = path
+                        .file_name()
+                        .unwrap()
+                        .to_os_string()
+                        .into_string()
+                        .unwrap();
+                    match matcher.fuzzy_match(&file_name, search_term) {
+                        Some(_) => true,
+                        None => false,
+                    }
+                })
+                .collect();
+            *self_paths = paths;
         }
     }
 
@@ -153,6 +198,31 @@ impl<'a> AppState<'a> {
         } else {
             None
         }
+    }
+
+    pub fn get_search_term(&self) -> &str {
+        let Self::Initialized { search_term, .. } = self else {
+            return "";
+        };
+        search_term.as_ref()
+    }
+
+    pub fn set_search_term(&mut self, arg: String) {
+        if let Self::Initialized { search_term, .. } = self {
+            *search_term = arg;
+        }
+    }
+
+    pub fn set_app_mode(&mut self, mode: AppMode) {
+        if let Self::Initialized { app_mode, .. } = self {
+            *app_mode = mode;
+        }
+    }
+    pub fn get_app_mode(&self) -> AppMode {
+        let Self::Initialized { app_mode, .. } = self else {
+            return AppMode::Normal;
+        };
+        app_mode.clone()
     }
 }
 

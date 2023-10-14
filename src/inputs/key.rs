@@ -98,6 +98,12 @@ impl Key {
             _ => panic!("unknown function key: F{}", n),
         }
     }
+    pub fn key_char(&self) -> String {
+        match self {
+            Key::Char(ch) => format!("{}", ch),
+            _ => self.to_string(),
+        }
+    }
 }
 
 impl Display for Key {
